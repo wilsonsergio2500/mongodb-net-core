@@ -1,0 +1,100 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MC.Interfaces.Repository;
+using AutoMapper;
+using Mdls = MC.Models;
+using MongoCoreNet.Models;
+using MongoCoreNet.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using MC.Encryptor;
+using MongoCoreNet.Models.Profile;
+
+namespace MongoCoreNet.Controllers
+{
+    [Produces("application/json")]
+    [Route("api/User")]
+    public class UserController : Controller
+    {
+        private readonly IUserRepository userRepository;
+        private readonly IAuthtenticationCurrentContext authenticationCurrentContext;
+        private readonly IEncryptionKeyGeneratorProvider encryptionProvider;
+        private readonly IMapper mapper;
+        public UserController(IUserRepository userRepo, IAuthtenticationCurrentContext currentAuthContext, IMapper autoMapper, IEncryptionKeyGeneratorProvider encryptionP)
+        {
+            userRepository = userRepo;
+            authenticationCurrentContext = currentAuthContext;
+            mapper = autoMapper;
+            encryptionProvider = encryptionP;
+
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUser(string userId) {
+
+            Mdls.User user = await userRepository.Get(userId);
+            DTOs.User userClient = mapper.Map<Mdls.User, DTOs.User>(user);
+
+            return Ok(userClient);
+
+        }
+
+        [HttpGet("me")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<DTOs.User> GetMe() {
+
+            string userId = authenticationCurrentContext.CurrentUser;
+
+            Mdls.User user = await userRepository.Get(userId);
+            DTOs.User userClient = mapper.Map<Mdls.User, DTOs.User>(user);
+
+            return userClient;
+
+        }
+
+        [HttpPut("update/me/image")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<ActionResponse> UpdateImage([FromBody]ImageEdit imageRequest) {
+
+            string userId = authenticationCurrentContext.CurrentUser;
+            bool updated = await userRepository.UpdateImage(userId, imageRequest.Image);
+            return new ActionResponse
+            {
+                State = updated
+            };
+        }
+
+        [HttpPut("update/me/password")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<ActionResponse> UpdatePassword([FromBody]PasswordEdit passwordRequest) {
+            string userId = authenticationCurrentContext.CurrentUser;
+
+            string encryptedPassword = encryptionProvider.Encrypt(passwordRequest.Password);
+            string encryptionKey = encryptionProvider.EncryiptionKey;
+
+            bool updated = await userRepository.UpdatePassword(userId, encryptedPassword, encryptionKey);
+
+            return new ActionResponse
+            {
+                State = updated
+            };
+
+            
+        }
+
+        [HttpPut("update/me/bio")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<ActionResponse> UpdateBio([FromBody]BioEdit bioRequest) {
+
+            string userId = authenticationCurrentContext.CurrentUser;
+            bool updated = await userRepository.UpdateBio(userId, bioRequest.Bio);
+
+            return new ActionResponse {
+                State = updated
+            }; 
+        }
+    }
+}
