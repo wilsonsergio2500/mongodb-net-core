@@ -27,6 +27,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.0.1" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.4.4" />
+    <PackageReference Include="NETCore.MailKit" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
