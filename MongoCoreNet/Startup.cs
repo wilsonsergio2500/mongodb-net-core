@@ -49,7 +49,7 @@ namespace MongoCoreNet
         {
             // Add framework services.
             services.AddCors(o => o.AddPolicy(CorsPolicy, builder => {
-                builder.WithOrigins("http://localhost:9000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                builder.WithOrigins(new string[] { "http://localhost:9000", "http://landmarkapp-dev.us-west-2.elasticbeanstalk.com" }).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
             }));
 
             services.AddOptions();
@@ -102,7 +102,7 @@ namespace MongoCoreNet
 
             app.UseResponseCompression();
             app.UseCors(CorsPolicy);
-
+            //app.UseStaticFiles();
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
