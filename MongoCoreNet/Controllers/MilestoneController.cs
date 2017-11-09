@@ -152,22 +152,43 @@ namespace MongoCoreNet.Controllers
 
             List<Mdls.Milestone> milestones = await milestoneRepository.GetByCategory(userId, categoryId, skip, take);
             long count = await milestoneRepository.GetTotalByCategory(userId, categoryId);
+
+            List<Task<DTOs.GridElment>> gdelments = new List<Task<DTOs.GridElment>>();
+
             foreach (Mdls.Milestone milestone in milestones) {
 
-                bool IsLiked = await likeRepository.HasLike(milestone.id, ownerId);
-                Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
-                DTOs.User user = await GetUserRecord(milestone.UserId);
-                DTOs.GridElment ge = new DTOs.GridElment
-                {
-                    Like = Like,
-                    Milestone = milestone,
-                    User = user,
-                    
-                };
-
-                gridElements.Add(ge);
-
+                gdelments.Add(ResolveGridElement(milestone, ownerId));
             }
+
+            while (gdelments.Count > 0) {
+
+                Task<DTOs.GridElment> finishTask = await Task.WhenAny(gdelments.ToArray());
+                gdelments.Remove(finishTask);
+
+                gridElements.Add(finishTask.Result);
+            }
+
+
+            //foreach (Mdls.Milestone milestone in milestones) {
+
+            //    //Task<bool> LikeTask = likeRepository.HasLike(milestone.id, ownerId);
+            //    //Task<DTOs.User> UserTask = GetUserRecord(milestone.UserId);
+            //    //await Task.WhenAll(LikeTask, UserTask);
+
+            //    bool IsLiked = await likeRepository.HasLike(milestone.id, ownerId);
+            //    Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
+            //    DTOs.User user = await GetUserRecord(milestone.UserId);
+            //    DTOs.GridElment ge = new DTOs.GridElment
+            //    {
+            //        Like = Like,
+            //        Milestone = milestone,
+            //        User = user,
+
+            //    };
+
+            //    gridElements.Add(ge);
+
+            //}
 
             return new ListResponse<DTOs.GridElment>
             {
@@ -177,6 +198,20 @@ namespace MongoCoreNet.Controllers
             };
         }
 
+
+        private async Task<DTOs.GridElment> ResolveGridElement(Mdls.Milestone milestone, string ownerId) {
+            bool IsLiked = await likeRepository.HasLike(milestone.id, ownerId);
+            Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
+            DTOs.User user = await GetUserRecord(milestone.UserId);
+            DTOs.GridElment ge = new DTOs.GridElment
+            {
+                Like = Like,
+                Milestone = milestone,
+                User = user,
+
+            };
+            return ge;
+        }
 
     }
 }
