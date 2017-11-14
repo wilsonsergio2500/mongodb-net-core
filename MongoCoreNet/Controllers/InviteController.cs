@@ -35,23 +35,27 @@ namespace MongoCoreNet.Controllers
 
 
         [HttpPost("new/{email}/{roleType}")]
-        public async Task<ActionResponse> Post(string email, int roleType)
+        public async Task<IActionResult> Post(string email, int roleType)
         {
 
             bool emailExist = await userRepository.DoesEmailExist(email);
-            if (!emailExist) {
-                Mdls.Invite invite = new Mdls.Invite {
+            if (!emailExist)
+            {
+                Mdls.Invite invite = new Mdls.Invite
+                {
                     Email = email,
-                    ParticipationRoleType =(Mdls.RoleType)roleType
+                    ParticipationRoleType = (Mdls.RoleType)roleType
                 };
 
-                //MC.Models.Invite inviteModel = mapper.Map<DTOs.Invite, MC.Models.Invite>(invite);
                 string inviteId = await inviteRepository.Add(invite);
 
 
             }
+            else {
+                return BadRequest(new DTOs.Error(ErrorResponses.NVITE_USER_EXIST));
+            }
 
-            return new ActionResponse { State = true };
+            return Ok(new ActionResponse { State = true });
 
         }
 
@@ -103,7 +107,7 @@ namespace MongoCoreNet.Controllers
             }
             else if (invite.InviteStatus == Mdls.InviteStatus.Completed) {
 
-                return BadRequest(new DTOs.Error("Invite has already been Completed"));
+                return BadRequest(new DTOs.Error(ErrorResponses.INVITE_COMPLETED_EXIST));
             }
 
             return Ok(actionResponse);

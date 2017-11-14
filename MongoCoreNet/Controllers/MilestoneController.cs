@@ -193,7 +193,7 @@ namespace MongoCoreNet.Controllers
             return new ListResponse<DTOs.GridElment>
             {
                 Count = count,
-                Result = gridElements
+                Result = gridElements.OrderByDescending(k => k.Milestone.CreatedDate).ToList<DTOs.GridElment>()
 
             };
         }
