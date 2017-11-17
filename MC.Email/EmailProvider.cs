@@ -58,11 +58,13 @@ namespace MC.Email
                 mimeMessage.Subject = configuration.Subject;
                 mimeMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
-                    Text = Content
+                    Text = Utils.EmailTemplate.getInviteTemplate()
                 };
                 using (SmtpClient client = new SmtpClient())
                 {
-                    client.Connect(configuration.Host, configuration.Port, true);
+                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                    client.Connect(configuration.Host, configuration.Port, false);
                     client.Authenticate(configuration.Username, configuration.Password);
 
                     await client.SendAsync(mimeMessage);
@@ -70,7 +72,7 @@ namespace MC.Email
                 }
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }

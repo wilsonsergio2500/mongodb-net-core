@@ -9,6 +9,7 @@ using MC.Interfaces.Repository;
 using AutoMapper;
 using MongoCoreNet.Models;
 using MC.Encryptor;
+using MC.Email;
 
 namespace MongoCoreNet.Controllers
 {
@@ -19,10 +20,12 @@ namespace MongoCoreNet.Controllers
         private readonly IUserRepository userRepository;
         private readonly IInviteRepository inviteRepository;
         private readonly IEncryptionKeyGeneratorProvider encryptionProvider;
-        public InviteController(IUserRepository userRepo, IInviteRepository inviteRepo, IEncryptionKeyGeneratorProvider encryptionGP) {
+        private readonly IEmailProvider emailProvider;
+        public InviteController(IUserRepository userRepo, IInviteRepository inviteRepo, IEncryptionKeyGeneratorProvider encryptionGP, IEmailProvider emailService) {
             userRepository = userRepo;
             inviteRepository = inviteRepo;
             encryptionProvider = encryptionGP;
+            emailProvider = emailService;
         }
 
         [HttpGet("{id}")]
@@ -38,9 +41,12 @@ namespace MongoCoreNet.Controllers
         public async Task<IActionResult> Post(string email, int roleType)
         {
 
+            await emailProvider.SendEmailAsHtml(email, "<p>hello world</p>");
+
             bool emailExist = await userRepository.DoesEmailExist(email);
             if (!emailExist)
             {
+                
                 Mdls.Invite invite = new Mdls.Invite
                 {
                     Email = email,

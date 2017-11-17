@@ -25,6 +25,8 @@ using MC.JwToken.Models;
 using Microsoft.AspNetCore.Authorization;
 using MongoCoreNet.Authorization;
 using MC.Cache;
+using MC.Email.Models;
+using MC.Email;
 
 namespace MongoCoreNet
 {
@@ -78,15 +80,17 @@ namespace MongoCoreNet
             #endregion
 
             services.Configure<MongoLabConfig>(Configuration.GetSection("MongLabConfig"));
+            services.Configure<EmailClientConfig>(Configuration.GetSection("EmailClientConfig"));
 
 
             services.AddSingleton<IMongoClientContext, MongoLabClientContext>();
-        
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<ILikeRepository, LikeRepository>();
             services.AddSingleton<IInviteRepository, InviteRepository>();
             services.AddSingleton<ICategoryRepository, CategoryRepository>();
             services.AddSingleton<IMilestoneRepository, MilestoneRepository>();
+
+            services.AddSingleton<IEmailProvider, EmailProvider>();
 
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
             services.AddResponseCompression();
