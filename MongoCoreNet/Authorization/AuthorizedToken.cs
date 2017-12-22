@@ -47,6 +47,7 @@ namespace MongoCoreNet.Authorization
                 {
                     ReadOnlyCollection<Claim> claims = tokenProvider.GetClaimsCollection(authvalue);
                     currentAuthenticationContext.setCurrentUser(claims.GetKey(ClaimKeys.USER_ID));
+                    currentAuthenticationContext.setCurrentRoleId(claims.GetKey(ClaimKeys.ROLE));
                     context.Succeed(requirement);
                 }
                 else
