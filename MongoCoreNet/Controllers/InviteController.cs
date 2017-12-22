@@ -10,6 +10,7 @@ using AutoMapper;
 using MongoCoreNet.Models;
 using MC.Encryptor;
 using MC.Email;
+using MC.Email.Utils;
 
 namespace MongoCoreNet.Controllers
 {
@@ -40,8 +41,9 @@ namespace MongoCoreNet.Controllers
         [HttpPost("new/{email}/{roleType}")]
         public async Task<IActionResult> Post(string email, int roleType)
         {
+            
 
-            await emailProvider.SendEmailAsHtml(email, "<p>hello world</p>");
+            
 
             bool emailExist = await userRepository.DoesEmailExist(email);
             if (!emailExist)
@@ -54,6 +56,7 @@ namespace MongoCoreNet.Controllers
                 };
 
                 string inviteId = await inviteRepository.Add(invite);
+                await emailProvider.SendEmailAsHtml(email, EmailTemplate.getInviteTemplate(inviteId));
 
 
             }

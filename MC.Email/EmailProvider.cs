@@ -58,7 +58,7 @@ namespace MC.Email
                 mimeMessage.Subject = configuration.Subject;
                 mimeMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
-                    Text = Utils.EmailTemplate.getInviteTemplate()
+                    Text = Content
                 };
                 using (SmtpClient client = new SmtpClient())
                 {
@@ -78,5 +78,8 @@ namespace MC.Email
             }
 
         }
+
+   
+
     }
 }
