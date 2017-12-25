@@ -96,5 +96,15 @@ namespace MongoCoreNet.Controllers
                 State = updated
             }; 
         }
+
+        [HttpGet("role/me")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public UserRoleResponse GetUserRole() {
+            return new UserRoleResponse
+            {
+                RoleId = authenticationCurrentContext.CurrentRoleId
+            };
+        }
+
     }
 }

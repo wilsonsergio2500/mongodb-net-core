@@ -9,6 +9,7 @@ namespace MongoCoreNet.Authorization
         void setCurrentUser(string user);
         void setCurrentRoleId(string roleId);
         string CurrentUser { get; }
+        int CurrentRoleId { get; }
 
         void setDefault();
 
@@ -29,6 +30,11 @@ namespace MongoCoreNet.Authorization
         public string CurrentUser {
             get {
                 return UserId;
+            }
+        }
+        public int CurrentRoleId {
+            get {
+                return RoleTypeId;
             }
         }
 
