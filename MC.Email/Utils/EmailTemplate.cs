@@ -58,7 +58,7 @@ namespace MC.Email.Utils
                             </div>
 
                     <div style='background-color:rgb(33,150,243); color: rgb(255,255,255); display: inline-block; padding: 0 6px; border-radius: 2px; margin: 6px 8px; font-weight: 500; font-size:14px; min-height: 36px; min-width: 88px; vertical-align: middle; align-items: center; line-height:36px; letter-spacing: 0.010em; box-shadow: 0px 7px 8px -4px rgba(0,0,0,0.2), 0px 12px 17px 2px rgba(0,0,0,0.14), 0px 5px 22px 4px rgba(0,0,0,0.12); text-decoration:none; cursor: pointer; text-transform: uppercase' >"
-                    + $"<a style='text-decoration:none; color: white' href = '{basePath}#/dashboard/invite/complete/{invitationId}' target = '_blank' > Complete Invite </a></div >";
+                    + $"<a style='text-decoration:none; color: white' href = '{basePath}#/landmark/complete/{invitationId}' target = '_blank' > Complete Invite </a></div >";
 
         }     
     }
