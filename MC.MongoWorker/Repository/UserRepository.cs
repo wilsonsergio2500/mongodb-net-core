@@ -32,6 +32,19 @@ namespace MC.MongoWorker.Repository
             }
         }
 
+        public async Task<bool> DoesUserNameExist(string username) {
+            try
+            {
+                FilterDefinition<User> query = Builders<User>.Filter.Regex(x => x.UserName, BsonRegularExpression.Create(new Regex(username, RegexOptions.IgnoreCase)));
+                User user = await Items.Find(query).SingleAsync();
+                return user != null;
+            }
+            catch  {
+                return false;
+            }
+        }
+
+
         public async Task<User> GetUserByNameOrEmail(string userName) {
 
             User user;

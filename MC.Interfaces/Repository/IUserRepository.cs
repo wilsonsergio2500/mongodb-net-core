@@ -11,6 +11,8 @@ namespace MC.Interfaces.Repository
     {
         Task<bool> DoesEmailExist(string email);
 
+        Task<bool> DoesUserNameExist(string username);
+
         Task<User> GetUserByNameOrEmail(string UserName);
 
         Task<bool> UpdateImage(string userId, string Image);
