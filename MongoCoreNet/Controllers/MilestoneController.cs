@@ -75,7 +75,7 @@ namespace MongoCoreNet.Controllers
             foreach(Mdls.Milestone milestone in records)
             {
                 #region Liked
-                bool IsLiked = await likeRepository.HasLike(milestone.id, milestone.UserId);
+                bool IsLiked = await likeRepository.HasLike(milestone.id, currentAuthenticationContext.CurrentUser);
                 Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
                 #endregion
 

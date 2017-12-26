@@ -7,6 +7,8 @@ using MC.Interfaces.client;
 using MC.Interfaces.Repository;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using MongoDB.Bson;
+using System.Text.RegularExpressions;
 
 namespace MC.MongoWorker.Repository
 {
@@ -21,7 +23,7 @@ namespace MC.MongoWorker.Repository
             User user;
             try
             {
-                FilterDefinition<User> query = Builders<User>.Filter.Eq(q => q.Email, email);
+                FilterDefinition<User> query = Builders<User>.Filter.Regex(x => x.Email, BsonRegularExpression.Create(new Regex(email, RegexOptions.IgnoreCase)));
                 user = await Items.Find(query).SingleAsync();
                 return user != null;
             }
@@ -36,8 +38,8 @@ namespace MC.MongoWorker.Repository
 
             try
             {
-                FilterDefinition<User> queryUser = Builders<User>.Filter.Eq(q => q.UserName, userName);
-                FilterDefinition<User> queryEmail = Builders<User>.Filter.Eq(q => q.Email, userName);
+                FilterDefinition<User> queryUser = Builders<User>.Filter.Regex(x => x.UserName, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
+                FilterDefinition<User> queryEmail = Builders<User>.Filter.Regex(x => x.Email, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
 
                 FilterDefinition<User> querys = Builders<User>.Filter.Or(queryUser, queryUser);
                 user = await Items.Find(querys).SingleAsync();
