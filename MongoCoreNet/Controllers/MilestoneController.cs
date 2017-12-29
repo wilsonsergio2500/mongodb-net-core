@@ -65,30 +65,62 @@ namespace MongoCoreNet.Controllers
         [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
         public async Task<ListResponse<DTOs.GridElment>> GetRecords(int skip, int take)
         {
+            string ownerId = currentAuthenticationContext.CurrentUser;
+
             ListResponse<DTOs.GridElment> gridElements = new ListResponse<DTOs.GridElment>();
+            List<DTOs.GridElment> items = new List<DTOs.GridElment>();
 
             gridElements.Count = await milestoneRepository.GetTotal();
 
-            
+            List<Task<DTOs.GridElment>> gdelments = new List<Task<DTOs.GridElment>>();
+
             List<Mdls.Milestone> records = await milestoneRepository.Get(skip, take);
-
-            foreach(Mdls.Milestone milestone in records)
+            foreach (Mdls.Milestone milestone in records)
             {
-                #region Liked
-                bool IsLiked = await likeRepository.HasLike(milestone.id, currentAuthenticationContext.CurrentUser);
-                Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
-                #endregion
 
-                DTOs.User user = await GetUserRecord(milestone.UserId);
-                DTOs.GridElment gridElment = new DTOs.GridElment
-                {
-                    Milestone = milestone,
-                    User = user,
-                    Like = Like,
-                };
-                gridElements.Result.Add(gridElment);
-
+                gdelments.Add(ResolveGridElement(milestone, ownerId));
             }
+
+            while (gdelments.Count > 0)
+            {
+
+                Task<DTOs.GridElment> finishTask = await Task.WhenAny(gdelments.ToArray());
+                gdelments.Remove(finishTask);
+
+                items.Add(finishTask.Result);
+            }
+
+
+            gridElements.Result = items.OrderByDescending(k => k.Milestone.CreatedDate).ToList<DTOs.GridElment>();
+
+            //List<Mdls.Milestone> records = await milestoneRepository.Get(skip, take);
+
+            //foreach(Mdls.Milestone milestone in records)
+            //{
+            //    #region Liked
+
+            //    Task<bool> task1 = Task.Run<bool>(() => likeRepository.HasLike(milestone.id, currentAuthenticationContext.CurrentUser));
+            //    Task<DTOs.User> task2 = Task.Run<DTOs.User>(() => GetUserRecord(milestone.UserId));
+
+            //     await Task.WhenAll(task1, task2);
+
+            //    bool IsLiked = task1.Result;
+            //    DTOs.User user = task2.Result;
+
+            //    //bool IsLiked = await likeRepository.HasLike(milestone.id, currentAuthenticationContext.CurrentUser);
+            //    Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
+            //    #endregion
+
+            //    //DTOs.User user = await GetUserRecord(milestone.UserId);
+            //    DTOs.GridElment gridElment = new DTOs.GridElment
+            //    {
+            //        Milestone = milestone,
+            //        User = user,
+            //        Like = Like,
+            //    };
+            //    gridElements.Result.Add(gridElment);
+
+            //}
 
             return gridElements;
         }
@@ -200,9 +232,19 @@ namespace MongoCoreNet.Controllers
 
 
         private async Task<DTOs.GridElment> ResolveGridElement(Mdls.Milestone milestone, string ownerId) {
+
+            //Task<bool> LikeTask = Task.Run<bool>(() => likeRepository.HasLike(milestone.id, ownerId));
+            //Task<DTOs.User> UserTask = Task.Run<DTOs.User>(() => GetUserRecord(milestone.UserId));
+            //await Task.WhenAll(LikeTask, UserTask);
+
             bool IsLiked = await likeRepository.HasLike(milestone.id, ownerId);
-            Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
             DTOs.User user = await GetUserRecord(milestone.UserId);
+
+            
+
+
+            Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
+            
             DTOs.GridElment ge = new DTOs.GridElment
             {
                 Like = Like,

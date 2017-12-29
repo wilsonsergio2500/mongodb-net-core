@@ -106,5 +106,15 @@ namespace MongoCoreNet.Controllers
             };
         }
 
+        [HttpPost("check/username/used")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<ActionResponse> CheckUserNameUsed([FromBody]UserNameUsed payload) {
+
+            bool IsUsed = await userRepository.DoesUserNameExist(payload.UserName);
+            return new ActionResponse
+            {
+                State = IsUsed
+            };
+        }
     }
 }
