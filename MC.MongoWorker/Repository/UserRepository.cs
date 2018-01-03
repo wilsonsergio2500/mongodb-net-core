@@ -67,12 +67,14 @@ namespace MC.MongoWorker.Repository
 
         }
 
-        public async Task<bool> UpdateBio(string userId, string Bio)
+        public async Task<bool> UpdateBio(string userId, string Bio, string JobTitle, List<Strength> strengths)
         {
             try
             {
                 FilterDefinition<User> query = Builders<User>.Filter.Eq(g => g.id, userId);
-                UpdateDefinition<User> update = Builders<User>.Update.Set(g => g.Bio, Bio);
+                UpdateDefinition<User> update = Builders<User>.Update.Set(g => g.Bio, Bio )
+                    .Set(g => g.JobTitle, JobTitle)
+                    .Set(g => g.Strengths, strengths);
                 await Items.UpdateOneAsync(query, update);
                 return true;
             }

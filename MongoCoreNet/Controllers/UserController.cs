@@ -90,7 +90,7 @@ namespace MongoCoreNet.Controllers
         public async Task<ActionResponse> UpdateBio([FromBody]BioEdit bioRequest) {
 
             string userId = authenticationCurrentContext.CurrentUser;
-            bool updated = await userRepository.UpdateBio(userId, bioRequest.Bio);
+            bool updated = await userRepository.UpdateBio(userId, bioRequest.Bio, bioRequest.JobTitle, bioRequest.Strengths);
 
             return new ActionResponse {
                 State = updated
