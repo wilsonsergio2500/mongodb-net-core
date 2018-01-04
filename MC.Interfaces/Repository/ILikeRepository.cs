@@ -13,5 +13,8 @@ namespace MC.Interfaces.Repository
 
         Task<bool> HasLike(string PostId, string UserId);
         Task<bool> AddLike(string PostId, string UserId);
+
+        Task<List<Like>> GetRecent5(string PostId);
+        Task<long> GetPostCount(string PostId);
     }
 }

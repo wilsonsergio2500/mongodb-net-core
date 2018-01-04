@@ -9,13 +9,15 @@ using MongoDB.Driver;
 using MC.Models.Base;
 using MC.Interfaces.client;
 using MC.Interfaces.Repository.Base;
+using Nito.AsyncEx;
 
 namespace MC.MongoWorker.Repository.Base
 {
 
     public class BaseRepository<T> : IBaseRepository<T> where T: BaseEntity, new()
     {
-        
+
+       
 
         protected static IMongoClient mongoClient { get; set; }
         protected static IMongoDatabase mongoDatabase { get; set; }
@@ -32,6 +34,9 @@ namespace MC.MongoWorker.Repository.Base
             }
 
             Items = mongoDatabase.GetCollection<T>(collection);
+
+            AsyncContext.Run(() => CreateIndex());
+
 
         }
 
@@ -101,6 +106,9 @@ namespace MC.MongoWorker.Repository.Base
         public virtual async Task Update(T entity) {
             var query = Builders<T>.Filter.Eq(g => g.id, entity.id);
             await Items.ReplaceOneAsync(query, entity);
+        }
+
+        public virtual async Task CreateIndex() {
         }
     }
 }

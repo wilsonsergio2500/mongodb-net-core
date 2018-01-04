@@ -58,5 +58,21 @@ namespace MC.MongoWorker.Repository
             string Id = await this.Add(like);
             return Id != null;
         }
+
+        public async Task<List<Like>> GetRecent5(string PostId) {
+
+            FilterDefinition<Like> query = Builders<Like>.Filter.Eq(x => x.PostId, PostId);
+
+            List<Like> likes5 = await Items.Find(query).Limit(5).ToListAsync<Like>();
+
+            return likes5;
+        }
+
+        public async Task<long> GetPostCount(string PostId) {
+
+            FilterDefinition<Like> query = Builders<Like>.Filter.Eq(x => x.PostId, PostId);
+            long count = await Items.CountAsync(query);
+            return count;
+        }
     }
 }

@@ -17,5 +17,7 @@ namespace MC.Interfaces.Repository.Base
 
         Task<long> GetTotal();
         Task Update(T entity);
+
+        Task CreateIndex();
     }
 }

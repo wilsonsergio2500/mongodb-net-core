@@ -8,6 +8,8 @@
     <PackageReference Include="Microsoft.AspNetCore" Version="1.0.5" />
     <PackageReference Include="MongoDB.Driver" Version="2.4.4" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.4.4" />
+    <PackageReference Include="Nito.AsyncEx.Context" Version="1.1.0" />
+    <PackageReference Include="Nito.AsyncEx.Tasks" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>

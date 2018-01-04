@@ -15,7 +15,9 @@ namespace MC.MongoWorker.Repository
     {
         public MilestoneRepository(IMongoClientContext mongoClientContext) : base(mongoClientContext)
         {
+            
         }
+
 
         public async Task<List<Milestone>> GetByUser(string userId, int skip, int limit)
         {
@@ -30,7 +32,9 @@ namespace MC.MongoWorker.Repository
             FilterDefinition<Milestone> queryMatch = Builders<Milestone>.Filter.ElemMatch(x => x.Categories, x => x.id == categoryId);
 
             FilterDefinition<Milestone> and = Builders<Milestone>.Filter.And(queryId, queryType, queryMatch);
-            List<Milestone> elements = await Items.Find(and).SortByDescending(g => g.CreatedDate).Skip(skip).Limit(limit).ToListAsync<Milestone>();
+            //List<Milestone> elements = await Items.Find(and).SortByDescending(g => g.CreatedDate).Skip(skip).Limit(limit).ToListAsync<Milestone>();
+
+            List<Milestone> elements = await Items.Find(and).Skip(skip).Limit(limit).ToListAsync<Milestone>();
 
             return elements;
             
@@ -53,7 +57,11 @@ namespace MC.MongoWorker.Repository
             long count = await Items.CountAsync(and);
             return count;
         }
-        
+
+        const string Index = "indexCreateDate";
+        public override async Task CreateIndex() {
+           await  Items.Indexes.CreateOneAsync(Builders<Milestone>.IndexKeys.Descending(g => g.id ).Descending(g => g.CreatedDate), new CreateIndexOptions { Name = Index });
+        }
 
     }
 }
