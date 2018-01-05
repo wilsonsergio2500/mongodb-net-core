@@ -22,13 +22,16 @@ namespace MongoCoreNet.Controllers
         private readonly IUserRepository userRepository;
         private readonly IAuthtenticationCurrentContext authenticationCurrentContext;
         private readonly IEncryptionKeyGeneratorProvider encryptionProvider;
+        private readonly IDecryptProvider decryptionProvider;
         private readonly IMapper mapper;
-        public UserController(IUserRepository userRepo, IAuthtenticationCurrentContext currentAuthContext, IMapper autoMapper, IEncryptionKeyGeneratorProvider encryptionP)
+        public UserController(IUserRepository userRepo, IAuthtenticationCurrentContext currentAuthContext, IMapper autoMapper, 
+            IEncryptionKeyGeneratorProvider encryptionP, IDecryptProvider decryptProvider)
         {
             userRepository = userRepo;
             authenticationCurrentContext = currentAuthContext;
             mapper = autoMapper;
             encryptionProvider = encryptionP;
+            decryptionProvider = decryptProvider;
 
         }
 
@@ -72,14 +75,32 @@ namespace MongoCoreNet.Controllers
         public async Task<ActionResponse> UpdatePassword([FromBody]PasswordEdit passwordRequest) {
             string userId = authenticationCurrentContext.CurrentUser;
 
-            string encryptedPassword = encryptionProvider.Encrypt(passwordRequest.Password);
-            string encryptionKey = encryptionProvider.EncryiptionKey;
+            Mdls.User user = await userRepository.Get(userId);
 
-            bool updated = await userRepository.UpdatePassword(userId, encryptedPassword, encryptionKey);
+            if (user != null)
+            {
+                #region Verify Password Match
+                string originalPassword = decryptionProvider.Decrypt(user.Password, user.EncryptionKey);
+                bool verified = passwordRequest.CurrentPassword == originalPassword;
+                #endregion
+
+                if (verified)
+                {
+                    string encryptedPassword = encryptionProvider.Encrypt(passwordRequest.Password);
+                    string encryptionKey = encryptionProvider.EncryiptionKey;
+
+                    bool updated = await userRepository.UpdatePassword(userId, encryptedPassword, encryptionKey);
+
+                    return new ActionResponse
+                    {
+                        State = updated
+                    };
+                }
+            }
 
             return new ActionResponse
             {
-                State = updated
+                State = false
             };
 
             
