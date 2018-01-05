@@ -27,6 +27,7 @@ using MongoCoreNet.Authorization;
 using MC.Cache;
 using MC.Email.Models;
 using MC.Email;
+using MongoCoreNet.Helpers;
 
 namespace MongoCoreNet
 {
@@ -91,6 +92,7 @@ namespace MongoCoreNet
             services.AddSingleton<IMilestoneRepository, MilestoneRepository>();
 
             services.AddSingleton<IEmailProvider, EmailProvider>();
+            services.AddSingleton<IUserCache, UserCache>();
 
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
             services.AddResponseCompression();

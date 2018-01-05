@@ -69,10 +69,11 @@ namespace MongoCoreNet.Controllers
 
             ListResponse<DTOs.GridElment> gridElements = new ListResponse<DTOs.GridElment>();
             List<DTOs.GridElment> items = new List<DTOs.GridElment>();
+            List<Task<DTOs.GridElment>> gdelments = new List<Task<DTOs.GridElment>>();
 
             gridElements.Count = await milestoneRepository.GetTotal();
 
-            List<Task<DTOs.GridElment>> gdelments = new List<Task<DTOs.GridElment>>();
+            
 
             List<Mdls.Milestone> records = await milestoneRepository.Get(skip, take);
             foreach (Mdls.Milestone milestone in records)

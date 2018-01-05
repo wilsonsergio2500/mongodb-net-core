@@ -10,6 +10,7 @@ using MC.Interfaces.Repository;
 using MongoCoreNet.Models;
 using MongoCoreNet.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using MongoCoreNet.Helpers;
 
 namespace MongoCoreNet.Controllers
 {
@@ -19,11 +20,13 @@ namespace MongoCoreNet.Controllers
     {
         private readonly ILikeRepository likeRepository;
         private readonly IAuthtenticationCurrentContext authenticationContext;
+        private readonly IUserCache userCache;
         
-        public LikeController(ILikeRepository likeRepo, IAuthtenticationCurrentContext authContext)
+        public LikeController(ILikeRepository likeRepo, IAuthtenticationCurrentContext authContext, IUserCache ucache)
         {
             likeRepository = likeRepo;
             authenticationContext = authContext;
+            userCache = ucache;
         }
 
         [HttpPost("like/{milestoneId}")]
@@ -52,5 +55,45 @@ namespace MongoCoreNet.Controllers
             };
         }
 
+        [HttpGet("post/count/{postId}")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<TotalResponse> GetPostCount(string postId) {
+
+            long count = await likeRepository.GetPostCount(postId);
+
+            return new TotalResponse {
+                Count = count
+            };
+        }
+
+        [HttpGet("post/likes/most5/{postId}")]
+        public async Task<ListResponse<DTOs.User>> GetRecent(string postId) {
+
+            Task<List<Mdls.Like>> LikeListTask = Task.Run<List<Mdls.Like>>(() => likeRepository.GetRecent5(postId));
+            Task<long> LikeCountTask = Task.Run<long>(() => likeRepository.GetPostCount(postId));
+            await Task.WhenAll(LikeListTask, LikeCountTask);
+
+            List<Task<DTOs.User>> userTask = new List<Task<DTOs.User>>();
+
+            foreach (Mdls.Like like in LikeListTask.Result) {
+                userTask.Add(userCache.GetUser(like.UserId));
+            }
+
+            List<DTOs.User> users = new List<DTOs.User>();
+            while (userTask.Count > 0) {
+                Task<DTOs.User> user = await Task.WhenAny(userTask.ToArray());
+                users.Add(user.Result);
+                userTask.Remove(user);
+            }
+
+            return new ListResponse<DTOs.User>
+            {
+                Count = LikeCountTask.Result,
+                Result = users
+            };
+
+
+
+        }
     }
 }

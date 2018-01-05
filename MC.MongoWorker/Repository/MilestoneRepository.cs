@@ -60,7 +60,7 @@ namespace MC.MongoWorker.Repository
 
         const string Index = "indexCreateDate";
         public override async Task CreateIndex() {
-           await  Items.Indexes.CreateOneAsync(Builders<Milestone>.IndexKeys.Descending(g => g.id ).Descending(g => g.CreatedDate), new CreateIndexOptions { Name = Index });
+         await  Items.Indexes.CreateOneAsync(Builders<Milestone>.IndexKeys.Descending(g => g.id ).Descending(g => g.CreatedDate), new CreateIndexOptions { Name = Index });
         }
 
     }
