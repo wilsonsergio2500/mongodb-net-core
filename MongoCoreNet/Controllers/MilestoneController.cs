@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Memory;
 using MC.Cache;
 using AutoMapper;
+using MongoCoreNet.Helpers;
 
 namespace MongoCoreNet.Controllers
 {
@@ -26,9 +27,10 @@ namespace MongoCoreNet.Controllers
         private readonly IMapper mapper;
         private readonly IUserRepository userRepository;
         private readonly ILikeRepository likeRepository;
+        private readonly IUserCache userCache;
 
         public MilestoneController(IMilestoneRepository milestoneRepo, IAuthtenticationCurrentContext currentAuthContext, 
-            ICacheProvider cacheP, IMapper automapper, IUserRepository userrepo, ILikeRepository likeRepo)
+            ICacheProvider cacheP, IMapper automapper, IUserRepository userrepo, ILikeRepository likeRepo, IUserCache usrCache)
         {
             milestoneRepository = milestoneRepo;
             currentAuthenticationContext = currentAuthContext;
@@ -36,6 +38,8 @@ namespace MongoCoreNet.Controllers
             mapper = automapper;
             userRepository = userrepo;
             likeRepository = likeRepo;
+            userCache = usrCache;
+            
         }
 
         [HttpGet("{id}")]
@@ -94,59 +98,19 @@ namespace MongoCoreNet.Controllers
 
             gridElements.Result = items.OrderByDescending(k => k.Milestone.CreatedDate).ToList<DTOs.GridElment>();
 
-            //List<Mdls.Milestone> records = await milestoneRepository.Get(skip, take);
-
-            //foreach(Mdls.Milestone milestone in records)
-            //{
-            //    #region Liked
-
-            //    Task<bool> task1 = Task.Run<bool>(() => likeRepository.HasLike(milestone.id, currentAuthenticationContext.CurrentUser));
-            //    Task<DTOs.User> task2 = Task.Run<DTOs.User>(() => GetUserRecord(milestone.UserId));
-
-            //     await Task.WhenAll(task1, task2);
-
-            //    bool IsLiked = task1.Result;
-            //    DTOs.User user = task2.Result;
-
-            //    //bool IsLiked = await likeRepository.HasLike(milestone.id, currentAuthenticationContext.CurrentUser);
-            //    Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
-            //    #endregion
-
-            //    //DTOs.User user = await GetUserRecord(milestone.UserId);
-            //    DTOs.GridElment gridElment = new DTOs.GridElment
-            //    {
-            //        Milestone = milestone,
-            //        User = user,
-            //        Like = Like,
-            //    };
-            //    gridElements.Result.Add(gridElment);
-
-            //}
+         
 
             return gridElements;
         }
 
-        private async Task<DTOs.User> GetUserRecord(string userId)
-        {
-            if (cacheProvider.DoesKeyExist<DTOs.User>(userId))
-            {
-                DTOs.User user = cacheProvider.Get<DTOs.User>(userId);
-                return user;
-            }
-            else {
-                Mdls.User userdisplay = await userRepository.Get(userId);
-                DTOs.User user = mapper.Map<Mdls.User, DTOs.User>(userdisplay);
-                cacheProvider.Set<DTOs.User>(userId, user);
-                return user;
-            }
-        }
+     
 
         [HttpGet("record/item/{milestoneId}")]
         [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
         public async Task<DTOs.GridElment> GetRecord(string milestoneId) {
 
             Mdls.Milestone milestone = await milestoneRepository.Get(milestoneId);
-            DTOs.User user = await GetUserRecord(milestone.UserId);
+            DTOs.User user = await userCache.GetUser(milestone.UserId);
             bool IsLiked = await likeRepository.HasLike(milestone.id, milestone.UserId);
             Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
 
@@ -200,28 +164,7 @@ namespace MongoCoreNet.Controllers
 
                 gridElements.Add(finishTask.Result);
             }
-
-
-            //foreach (Mdls.Milestone milestone in milestones) {
-
-            //    //Task<bool> LikeTask = likeRepository.HasLike(milestone.id, ownerId);
-            //    //Task<DTOs.User> UserTask = GetUserRecord(milestone.UserId);
-            //    //await Task.WhenAll(LikeTask, UserTask);
-
-            //    bool IsLiked = await likeRepository.HasLike(milestone.id, ownerId);
-            //    Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
-            //    DTOs.User user = await GetUserRecord(milestone.UserId);
-            //    DTOs.GridElment ge = new DTOs.GridElment
-            //    {
-            //        Like = Like,
-            //        Milestone = milestone,
-            //        User = user,
-
-            //    };
-
-            //    gridElements.Add(ge);
-
-            //}
+           
 
             return new ListResponse<DTOs.GridElment>
             {
@@ -234,15 +177,9 @@ namespace MongoCoreNet.Controllers
 
         private async Task<DTOs.GridElment> ResolveGridElement(Mdls.Milestone milestone, string ownerId) {
 
-            //Task<bool> LikeTask = Task.Run<bool>(() => likeRepository.HasLike(milestone.id, ownerId));
-            //Task<DTOs.User> UserTask = Task.Run<DTOs.User>(() => GetUserRecord(milestone.UserId));
-            //await Task.WhenAll(LikeTask, UserTask);
 
             bool IsLiked = await likeRepository.HasLike(milestone.id, ownerId);
-            DTOs.User user = await GetUserRecord(milestone.UserId);
-
-            
-
+            DTOs.User user = await userCache.GetUser(milestone.UserId);
 
             Models.enums.LikeType Like = IsLiked ? Models.enums.LikeType.ON : Models.enums.LikeType.OFF;
             
@@ -251,7 +188,7 @@ namespace MongoCoreNet.Controllers
                 Like = Like,
                 Milestone = milestone,
                 User = user,
-
+                Self = ownerId == milestone.UserId
             };
             return ge;
         }

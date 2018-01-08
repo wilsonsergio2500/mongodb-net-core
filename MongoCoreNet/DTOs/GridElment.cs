@@ -11,5 +11,7 @@ namespace MongoCoreNet.DTOs
         public Mdls.Milestone Milestone { get; set; }
         public User User { get; set; }
         public Models.enums.LikeType Like { get; set; }
+
+        public bool Self { get; set; }
     }
 }
