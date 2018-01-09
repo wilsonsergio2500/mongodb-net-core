@@ -18,6 +18,8 @@ namespace MC.Interfaces.Repository.Base
         Task<long> GetTotal();
         Task Update(T entity);
 
+        Task<Boolean> Deactivate(string Id);
+
         Task CreateIndex();
     }
 }

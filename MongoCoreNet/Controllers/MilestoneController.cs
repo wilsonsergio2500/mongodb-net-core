@@ -118,7 +118,8 @@ namespace MongoCoreNet.Controllers
             {
                 Milestone = milestone,
                 User = user,
-                Like = Like
+                Like = Like,
+                Self = currentAuthenticationContext.CurrentUser == milestone.UserId
             };
 
 
@@ -193,5 +194,27 @@ namespace MongoCoreNet.Controllers
             return ge;
         }
 
+        [HttpDelete("remove/item/{milestoneId}")]
+        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
+        public async Task<ActionResponse> RemoveItem(string milestoneId) {
+
+            Mdls.Milestone milestone = await milestoneRepository.Get(milestoneId);
+
+            if (milestone != null) {
+                bool isOwner = milestone.UserId == currentAuthenticationContext.CurrentUser;
+                if (isOwner) {
+                    bool deleted = await milestoneRepository.Delete(milestoneId);
+                    return new ActionResponse
+                    {
+                        State = deleted
+                    };
+                }
+            }
+
+            return new ActionResponse {
+                State = false
+            };
+
+        }
     }
 }
