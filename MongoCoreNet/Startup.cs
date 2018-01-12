@@ -76,7 +76,15 @@ namespace MongoCoreNet
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Authorization.Policies.AUTHORIZATION_TOKEN, policy =>
-                policy.Requirements.Add(new Authorization.AuthorizationTokenRequirement()));
+
+                     policy.Requirements.Add(new Authorization.AuthorizationTokenRequirement())
+                );
+
+                options.AddPolicy(Authorization.Policies.AUTHORIZATION_ADMIN_ONLY, policy =>
+
+                    policy.Requirements.Add(new Authorization.AdminRoleOnlyAuthorizationRequirment())
+
+                );
             });
             #endregion
 
