@@ -71,7 +71,7 @@ namespace MongoCoreNet
             services.AddSingleton<IJwtSecurityProvider, JwtSecurityProvider>();
             services.AddSingleton<IAuthtenticationCurrentContext, AuthenticationCurrentContext>();
             services.AddSingleton<IAuthorizationHandler, Authorization.AuthorizationTokenPresent>();
-            
+            services.AddSingleton<IAuthorizationHandler, Authorization.AdminRoleAuthorization>();
 
             services.AddAuthorization(options =>
             {

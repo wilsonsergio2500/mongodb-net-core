@@ -128,7 +128,6 @@ namespace MongoCoreNet.Controllers
         }
 
         [HttpPost("check/username/used")]
-        [Authorize(Policy = Policies.AUTHORIZATION_TOKEN)]
         public async Task<ActionResponse> CheckUserNameUsed([FromBody]UserNameUsed payload) {
 
             bool IsUsed = await userRepository.DoesUserNameExist(payload.UserName);
@@ -136,6 +135,24 @@ namespace MongoCoreNet.Controllers
             {
                 State = IsUsed
             };
+        }
+
+        [HttpGet("list/{skip}/{take}")]
+        [Authorize(Policy = Policies.AUTHORIZATION_ADMIN_ONLY)]
+        public async Task<ListResponse<DTOs.User>> GetUserList(int skip, int take) {
+
+            long count = await userRepository.GetTotal();
+
+            List<Mdls.User> usersm = await userRepository.Get(skip, take);
+
+            List<DTOs.User> usersd = mapper.Map<List<Mdls.User>, List<DTOs.User>>(usersm);
+
+            return new ListResponse<DTOs.User>
+            {
+                Count = count,
+                Result = usersd
+            };
+
         }
     }
 }
