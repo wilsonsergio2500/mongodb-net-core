@@ -37,7 +37,7 @@ namespace MongoCoreNet.Controllers
 
             Mdls.User user = await userRepository.GetUserByNameOrEmail(credentials.Name);
 
-            if (user != null)
+            if (user != null && user.Active)
             {
                 string Password = decryptionProvider.Decrypt(user.Password, user.EncryptionKey);
 

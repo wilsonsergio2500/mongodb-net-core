@@ -23,5 +23,7 @@ namespace MongoCoreNet.DTOs
         public Mdls.RoleType Role { get; set; }
 
         public string Image { get; set; }
+
+        public bool Active { get; set; }
     }
 }

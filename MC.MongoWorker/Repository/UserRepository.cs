@@ -59,7 +59,7 @@ namespace MC.MongoWorker.Repository
 
                 return user;
             }
-            catch
+            catch (Exception e)
             {
 
                 return null;
