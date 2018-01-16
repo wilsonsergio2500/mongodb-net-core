@@ -9,6 +9,7 @@ using MC.MongoWorker.Helpers;
 using MongoDB.Driver;
 using MC.Interfaces.Repository;
 using MongoDB.Bson;
+using System.Text.RegularExpressions;
 
 namespace MC.MongoWorker.Repository
 {
@@ -47,7 +48,11 @@ namespace MC.MongoWorker.Repository
         public async Task<List<Category>> MatchRecordsByName(string Name)
         {
             FilterDefinition<Category> queryActiveOnly = Builders<Category>.Filter.Eq(g => g.Active, true);
-            FilterDefinition<Category> queryContainName = Builders<Category>.Filter.Regex(g => g.Name, new BsonRegularExpression($".*{Name}.*"));
+            
+            FilterDefinition<Category> queryContainName = Builders<Category>.Filter.Regex(g => g.Name,
+                BsonRegularExpression.Create(new Regex(Name, RegexOptions.IgnoreCase)) 
+                );
+                
             FilterDefinition<Category> queryall = Builders<Category>.Filter.And(queryActiveOnly, queryContainName);
 
             List<Category> categories = await Items.Find(queryall).ToListAsync<Category>();
