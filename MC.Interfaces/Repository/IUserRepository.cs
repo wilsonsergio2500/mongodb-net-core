@@ -20,5 +20,9 @@ namespace MC.Interfaces.Repository
         Task<bool> UpdatePassword(string userId, string Password, string EncryptionKey);
 
         Task<bool> UpdateBio(string userId, string Bio, string JobTitle, List<Strength> strengths);
+
+        Task<bool> DeactivateUserByEmail(string email);
+
+        Task<bool> ActivateUserByEmail(string email);
     }
 }

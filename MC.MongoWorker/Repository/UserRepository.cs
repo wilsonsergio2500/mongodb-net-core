@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using System.Text.RegularExpressions;
+using System.Linq;
+using MC.MongoWorker.Helpers;
 
 namespace MC.MongoWorker.Repository
 {
@@ -16,6 +18,73 @@ namespace MC.MongoWorker.Repository
     {
         public UserRepository(IMongoClientContext mongoClientContext) : base(mongoClientContext)
         {
+        }
+
+        public override async Task<string> Add(User entity)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(entity.id))
+                {
+                    entity.CreatedDate = JsDateConverter.Convert(DateTime.UtcNow);
+                    entity.Active = true;
+
+                    await Items.InsertOneAsync(entity); ;
+                    return entity.id.ToString();
+                }
+
+                entity.UserName = entity.UserName.ToLower();
+                entity.Email = entity.Email.ToLower();
+                
+
+                var query = Builders<User>.Filter.Eq(g => g.id, entity.id);
+                await Items.ReplaceOneAsync(query, entity);
+                return entity.id;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        public async Task<bool> ActivateUserByEmail(string email)
+        {
+            try
+            {
+                FilterDefinition<User> query = Builders<User>.Filter.Eq(g => g.Email, email);
+                User user = await Items.Find(query).SingleAsync();
+                if (user != null) {
+                    return await this.Activate(user.id);
+                }
+
+            }
+            catch {
+                return false;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeactivateUserByEmail(string email)
+        {
+            try
+            {
+                FilterDefinition<User> query = Builders<User>.Filter.Eq(g => g.Email, email);
+                User user = await Items.Find(query).SingleAsync();
+                if (user != null)
+                {
+                    return await this.Deactivate(user.id);
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+
+            return false;
         }
 
         public async Task<bool> DoesEmailExist(string email)
@@ -27,7 +96,7 @@ namespace MC.MongoWorker.Repository
                 user = await Items.Find(query).SingleAsync();
                 return user != null;
             }
-            catch (Exception e) {
+            catch  {
                 return false;
             }
         }
@@ -51,8 +120,14 @@ namespace MC.MongoWorker.Repository
 
             try
             {
-                FilterDefinition<User> queryUser = Builders<User>.Filter.Regex(x => x.UserName, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
-                FilterDefinition<User> queryEmail = Builders<User>.Filter.Regex(x => x.Email, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
+
+
+                //FilterDefinition<User> queryUser = Builders<User>.Filter.Regex(x => x.UserName, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
+                //FilterDefinition<User> queryEmail = Builders<User>.Filter.Regex(x => x.Email, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
+
+                FilterDefinition<User> queryUser = Builders<User>.Filter.Eq(x => x.UserName, userName.ToLower() );
+                FilterDefinition<User> queryEmail = Builders<User>.Filter.Eq(x => x.Email, userName.ToLower());
+
 
                 FilterDefinition<User> querys = Builders<User>.Filter.Or(queryUser, queryUser);
                 user = await Items.Find(querys).SingleAsync();
@@ -113,5 +188,7 @@ namespace MC.MongoWorker.Repository
             }
 
         }
+
+        
     }
 }

@@ -10,6 +10,7 @@ namespace MC.Email.Utils
     {
 
         const string basePath = "http://landmarkapp-dev.us-west-2.elasticbeanstalk.com/";
+        //const string basePath = "http://localhost:9000";
         public static string INVITE_TEMPLATE 
          {
                 get {

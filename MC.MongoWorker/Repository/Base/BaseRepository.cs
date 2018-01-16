@@ -108,6 +108,21 @@ namespace MC.MongoWorker.Repository.Base
             await Items.ReplaceOneAsync(query, entity);
         }
 
+        public virtual async Task<Boolean> Activate(string Id)
+        {
+            try
+            {
+                var query = Builders<T>.Filter.Eq(g => g.id, Id);
+                var update = Builders<T>.Update.Set(k => k.Active, true);
+                await Items.UpdateOneAsync(query, update);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public virtual async Task<Boolean> Deactivate(string Id) {
             try
             {
@@ -123,5 +138,7 @@ namespace MC.MongoWorker.Repository.Base
 
         public virtual async Task CreateIndex() {
         }
+
+        
     }
 }

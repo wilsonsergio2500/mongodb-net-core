@@ -137,6 +137,8 @@ namespace MongoCoreNet.Controllers
             };
         }
 
+        #region Admin Based Task
+
         [HttpGet("list/{skip}/{take}")]
         [Authorize(Policy = Policies.AUTHORIZATION_ADMIN_ONLY)]
         public async Task<ListResponse<DTOs.User>> GetUserList(int skip, int take) {
@@ -154,5 +156,31 @@ namespace MongoCoreNet.Controllers
             };
 
         }
+
+        [HttpPost("deactivate")]
+        [Authorize(Policy = Policies.AUTHORIZATION_ADMIN_ONLY)]
+        public async Task<ActionResponse> Deactivate([FromBody]ActivationBasedRequest request) {
+
+            bool completed = await userRepository.DeactivateUserByEmail(request.Email);
+            return new ActionResponse
+            {
+                State = completed
+            };
+        }
+
+        [HttpPost("activate")]
+        [Authorize(Policy = Policies.AUTHORIZATION_ADMIN_ONLY)]
+        public async Task<ActionResponse> Activate([FromBody]ActivationBasedRequest request) {
+
+            bool completed = await userRepository.ActivateUserByEmail(request.Email);
+            return new ActionResponse
+            {
+                State = completed
+            };
+        }
+
+
+        #endregion
+
     }
 }
