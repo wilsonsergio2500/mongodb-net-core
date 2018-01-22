@@ -2,7 +2,21 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.16.2" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.0.5" />
+    <PackageReference Include="Nito.AsyncEx.Context" Version="1.1.0" />
+    <PackageReference Include="Nito.AsyncEx.Tasks" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MC.AmazonStoreS3\MC.AmazonStoreS3.csproj" />
+    <ProjectReference Include="..\MC.Interfaces\MC.Interfaces.csproj" />
+    <ProjectReference Include="..\MC.Models\MC.Models.csproj" />
+    <ProjectReference Include="..\MC.MongoWorker\MC.MongoWorker.csproj" />
+  </ItemGroup>
 
 </Project>
