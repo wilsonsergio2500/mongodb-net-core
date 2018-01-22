@@ -16,5 +16,7 @@ namespace MC.Interfaces.Repository
         Task<List<Milestone>> GetByCategory(string userId, string categoryId, int skip, int limit);
 
         Task<long> GetTotalByCategory(string userId, string categoryId);
+
+        Task<bool> SetImage(string milestoneId, string Image);
     }
 }

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.16.2" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.0.5" />
+  </ItemGroup>
+
+</Project>

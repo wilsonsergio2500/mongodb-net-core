@@ -28,6 +28,8 @@ using MC.Cache;
 using MC.Email.Models;
 using MC.Email;
 using MongoCoreNet.Helpers;
+using MC.AmazonStoreS3.Models;
+using MC.AmazonStoreS3.Providers;
 
 namespace MongoCoreNet
 {
@@ -88,6 +90,11 @@ namespace MongoCoreNet
             });
             #endregion
 
+            #region AWS S3
+            services.Configure<AmazonStoreS3Config>(Configuration.GetSection("AmazonStoreS3Config"));
+            services.AddSingleton<IAmazonS3ImageProvider, AmazonS3ImageProvider>();
+            #endregion
+
             services.Configure<MongoLabConfig>(Configuration.GetSection("MongLabConfig"));
             services.Configure<EmailClientConfig>(Configuration.GetSection("EmailClientConfig"));
 
@@ -101,6 +108,8 @@ namespace MongoCoreNet
 
             services.AddSingleton<IEmailProvider, EmailProvider>();
             services.AddSingleton<IUserCache, UserCache>();
+
+
 
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
             services.AddResponseCompression();

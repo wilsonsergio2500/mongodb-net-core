@@ -32,7 +32,6 @@ namespace MC.MongoWorker.Repository
             FilterDefinition<Milestone> queryMatch = Builders<Milestone>.Filter.ElemMatch(x => x.Categories, x => x.id == categoryId);
 
             FilterDefinition<Milestone> and = Builders<Milestone>.Filter.And(queryId, queryType, queryMatch);
-            //List<Milestone> elements = await Items.Find(and).SortByDescending(g => g.CreatedDate).Skip(skip).Limit(limit).ToListAsync<Milestone>();
 
             List<Milestone> elements = await Items.Find(and).Skip(skip).Limit(limit).ToListAsync<Milestone>();
 
@@ -56,6 +55,21 @@ namespace MC.MongoWorker.Repository
             FilterDefinition<Milestone> and = Builders<Milestone>.Filter.And(queryId, queryType, queryMatch);
             long count = await Items.CountAsync(and);
             return count;
+        }
+
+        public async Task<bool> SetImage(string milestoneId, string Image) {
+            try
+            {
+                FilterDefinition<Milestone> query = Builders<Milestone>.Filter.Eq(g => g.id, milestoneId);
+                UpdateDefinition<Milestone> update = Builders<Milestone>.Update.Set(g => g.Image, Image);
+                await Items.UpdateOneAsync(query, update);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
         }
 
         const string Index = "indexCreateDate";

@@ -19,9 +19,9 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="2.0.1" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.16.2" />
     <PackageReference Include="HtmlAgilityPack.NetCore" Version="1.5.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="1.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="1.0.0" />
@@ -31,7 +31,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.0.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.0.1" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.4.4" />
@@ -43,6 +42,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MC.AmazonStoreS3\MC.AmazonStoreS3.csproj" />
     <ProjectReference Include="..\MC.Cache\MC.Cache.csproj" />
     <ProjectReference Include="..\MC.Email\MC.Email.csproj" />
     <ProjectReference Include="..\MC.Encryptor\MC.Encryptor.csproj" />

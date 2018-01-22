@@ -121,10 +121,6 @@ namespace MC.MongoWorker.Repository
             try
             {
 
-
-                //FilterDefinition<User> queryUser = Builders<User>.Filter.Regex(x => x.UserName, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
-                //FilterDefinition<User> queryEmail = Builders<User>.Filter.Regex(x => x.Email, BsonRegularExpression.Create(new Regex(userName, RegexOptions.IgnoreCase)));
-
                 FilterDefinition<User> queryUser = Builders<User>.Filter.Eq(x => x.UserName, userName.ToLower() );
                 FilterDefinition<User> queryEmail = Builders<User>.Filter.Eq(x => x.Email, userName.ToLower());
 

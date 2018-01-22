@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoCoreNet", "MongoCoreNet\MongoCoreNet.csproj", "{A13227C2-E15D-470A-928E-1B8BF9E90AD5}"
 EndProject
@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MC.JwToken.Test", "MC.JwTok
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MC.Cache", "MC.Cache\MC.Cache.csproj", "{87E0DC57-7F6E-4DE5-B2F0-034203357960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MC.Email", "MC.Email\MC.Email.csproj", "{0819B32B-ED71-4C04-AB68-9E0A382F437D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MC.Email", "MC.Email\MC.Email.csproj", "{0819B32B-ED71-4C04-AB68-9E0A382F437D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MC.AmazonStoreS3", "MC.AmazonStoreS3\MC.AmazonStoreS3.csproj", "{E5AE3BAE-1AD0-4CA5-A0AF-B7A649366FE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{0819B32B-ED71-4C04-AB68-9E0A382F437D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0819B32B-ED71-4C04-AB68-9E0A382F437D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0819B32B-ED71-4C04-AB68-9E0A382F437D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5AE3BAE-1AD0-4CA5-A0AF-B7A649366FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5AE3BAE-1AD0-4CA5-A0AF-B7A649366FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5AE3BAE-1AD0-4CA5-A0AF-B7A649366FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5AE3BAE-1AD0-4CA5-A0AF-B7A649366FE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,5 +93,9 @@ Global
 		{48D4ED83-7230-426B-AA32-EEE4E974DAAF} = {C5180FB1-0509-4F0A-A856-5BD823CF7CFF}
 		{87E0DC57-7F6E-4DE5-B2F0-034203357960} = {EDF56C1F-427A-45A4-BD7B-359CF8E12136}
 		{0819B32B-ED71-4C04-AB68-9E0A382F437D} = {EDF56C1F-427A-45A4-BD7B-359CF8E12136}
+		{E5AE3BAE-1AD0-4CA5-A0AF-B7A649366FE1} = {EDF56C1F-427A-45A4-BD7B-359CF8E12136}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60DFB22E-4D4C-4EF9-832F-3D1505BC8AAF}
 	EndGlobalSection
 EndGlobal
