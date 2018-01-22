@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /MongoCoreNet/appsettings.json
 /MongoCoreNet/appsettings.json
+/MC.Updater/appsettings.json

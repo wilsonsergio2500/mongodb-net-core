@@ -12,8 +12,6 @@ namespace MC.AmazonStoreS3.Providers
         Task<bool> Save(string key, MemoryStream stm);
         Task<string> GetSave(string key, MemoryStream stm);
         Task<bool> Delete(string key);
-        
-
         string GetContentType();
     }
 }
