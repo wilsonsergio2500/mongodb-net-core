@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Memory;
 using MC.Cache;
 using AutoMapper;
 using MongoCoreNet.Helpers;
+using MC.AmazonStoreS3.Providers;
 
 namespace MongoCoreNet.Controllers
 {
@@ -28,9 +29,12 @@ namespace MongoCoreNet.Controllers
         private readonly IUserRepository userRepository;
         private readonly ILikeRepository likeRepository;
         private readonly IUserCache userCache;
+        private readonly IAmazonS3ImageProvider amazonS3ImageProvider;
 
         public MilestoneController(IMilestoneRepository milestoneRepo, IAuthtenticationCurrentContext currentAuthContext, 
-            ICacheProvider cacheP, IMapper automapper, IUserRepository userrepo, ILikeRepository likeRepo, IUserCache usrCache)
+            ICacheProvider cacheP, IMapper automapper, IUserRepository userrepo, ILikeRepository likeRepo, IUserCache usrCache,
+            IAmazonS3ImageProvider amazons3imageprovider
+            )
         {
             milestoneRepository = milestoneRepo;
             currentAuthenticationContext = currentAuthContext;
@@ -39,7 +43,9 @@ namespace MongoCoreNet.Controllers
             userRepository = userrepo;
             likeRepository = likeRepo;
             userCache = usrCache;
-            
+            amazonS3ImageProvider = amazons3imageprovider;
+
+
         }
 
         [HttpGet("{id}")]
@@ -131,6 +137,10 @@ namespace MongoCoreNet.Controllers
         public async Task<ActionResponse> Add([FromBody]Mdls.Milestone milestone) {
 
             milestone.UserId = currentAuthenticationContext.CurrentUser;
+            if (milestone.Image != null && milestone.Image.StartsWith("data:image/png;base64,")) {
+                string path = await amazonS3ImageProvider.Add($"milestones/{milestone.UserId}/{milestone.id}/img.png", milestone.Image);
+                milestone.Image = path;
+            }
 
             string milestoneId = await milestoneRepository.Add(milestone);
 
@@ -204,6 +214,7 @@ namespace MongoCoreNet.Controllers
                 bool isOwner = milestone.UserId == currentAuthenticationContext.CurrentUser;
                 if (isOwner) {
                     bool deleted = await milestoneRepository.Delete(milestoneId);
+                    bool awsdeleted = await amazonS3ImageProvider.Delete($"milestones/{milestone.UserId}/{milestone.id}/img.png");
                     return new ActionResponse
                     {
                         State = deleted
