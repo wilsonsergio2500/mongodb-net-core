@@ -12,6 +12,7 @@ using MongoCoreNet.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using MC.Encryptor;
 using MongoCoreNet.Models.Profile;
+using MC.AmazonStoreS3.Providers;
 
 namespace MongoCoreNet.Controllers
 {
@@ -24,14 +25,16 @@ namespace MongoCoreNet.Controllers
         private readonly IEncryptionKeyGeneratorProvider encryptionProvider;
         private readonly IDecryptProvider decryptionProvider;
         private readonly IMapper mapper;
+        private readonly IAmazonS3ImageProvider amazonS3ImageProvider;
         public UserController(IUserRepository userRepo, IAuthtenticationCurrentContext currentAuthContext, IMapper autoMapper, 
-            IEncryptionKeyGeneratorProvider encryptionP, IDecryptProvider decryptProvider)
+            IEncryptionKeyGeneratorProvider encryptionP, IDecryptProvider decryptProvider, IAmazonS3ImageProvider amazons3imageprovider)
         {
             userRepository = userRepo;
             authenticationCurrentContext = currentAuthContext;
             mapper = autoMapper;
             encryptionProvider = encryptionP;
             decryptionProvider = decryptProvider;
+            amazonS3ImageProvider = amazons3imageprovider;
 
         }
 
@@ -63,6 +66,13 @@ namespace MongoCoreNet.Controllers
         public async Task<ActionResponse> UpdateImage([FromBody]ImageEdit imageRequest) {
 
             string userId = authenticationCurrentContext.CurrentUser;
+
+            if (imageRequest.Image != null && imageRequest.Image.StartsWith("data:image/png;base64,"))
+            {
+                string path = await amazonS3ImageProvider.Add($"users/{userId}/profile.png", imageRequest.Image);
+                imageRequest.Image = path;
+            }
+
             bool updated = await userRepository.UpdateImage(userId, imageRequest.Image);
             return new ActionResponse
             {

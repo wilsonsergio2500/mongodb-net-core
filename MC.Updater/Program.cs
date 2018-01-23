@@ -15,7 +15,7 @@ namespace MC.Updater
         static void Main(string[] args)
         {
 
-            AsyncContext.Run(() => ImageToS3.Do());
+            AsyncContext.Run(() => ImageToS3.UsersDo());
         }
     }
 }

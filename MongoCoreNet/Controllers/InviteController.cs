@@ -11,6 +11,7 @@ using MongoCoreNet.Models;
 using MC.Encryptor;
 using MC.Email;
 using MC.Email.Utils;
+using MC.AmazonStoreS3.Providers;
 
 namespace MongoCoreNet.Controllers
 {
@@ -22,11 +23,15 @@ namespace MongoCoreNet.Controllers
         private readonly IInviteRepository inviteRepository;
         private readonly IEncryptionKeyGeneratorProvider encryptionProvider;
         private readonly IEmailProvider emailProvider;
-        public InviteController(IUserRepository userRepo, IInviteRepository inviteRepo, IEncryptionKeyGeneratorProvider encryptionGP, IEmailProvider emailService) {
+        private readonly IAmazonS3ImageProvider amazonS3ImageProvider;
+        public InviteController(IUserRepository userRepo, IInviteRepository inviteRepo, IEncryptionKeyGeneratorProvider encryptionGP, IEmailProvider emailService,
+            IAmazonS3ImageProvider amazons3imageprovider
+            ) {
             userRepository = userRepo;
             inviteRepository = inviteRepo;
             encryptionProvider = encryptionGP;
             emailProvider = emailService;
+            amazonS3ImageProvider = amazons3imageprovider;
         }
 
         [HttpGet("{id}")]
@@ -107,7 +112,16 @@ namespace MongoCoreNet.Controllers
                 completionRequest.User.Password = encryptedPassword;
                 completionRequest.User.EncryptionKey = encryptionKey;
 
+                
+
                 string userId = await userRepository.Add(completionRequest.User);
+                #region Image
+                if (completionRequest.User.Image != null && completionRequest.User.Image.StartsWith("data:image/png;base64,"))
+                {
+                    string path = await amazonS3ImageProvider.Add($"users/{userId}/profile.png", completionRequest.User.Image);
+                    bool saved = await userRepository.UpdateImage(userId, path);
+                }
+                #endregion
                 if (!String.IsNullOrEmpty(userId)) {
 
                     bool updated = await inviteRepository.CompleteInvite(completionRequest.InvitationId);
