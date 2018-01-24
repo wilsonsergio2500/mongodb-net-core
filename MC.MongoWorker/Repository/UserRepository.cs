@@ -87,6 +87,25 @@ namespace MC.MongoWorker.Repository
             return false;
         }
 
+        public async Task<bool> SetRoleByEmail(string email, int roleId) {
+            try
+            {
+                FilterDefinition<User> query = Builders<User>.Filter.Eq(g => g.Email, email);
+                User user = await Items.Find(query).SingleAsync();
+                if (user != null)
+                {
+                    FilterDefinition<User> q = Builders<User>.Filter.Eq(g => g.id, user.id);
+                    UpdateDefinition<User> update = Builders<User>.Update.Set(g => g.Role, (RoleType)roleId);
+                    await Items.UpdateOneAsync(q, update);
+                    return true;
+                }
+            }
+            catch {
+                return false;
+            }
+            return false;
+        }
+
         public async Task<bool> DoesEmailExist(string email)
         {
             User user;

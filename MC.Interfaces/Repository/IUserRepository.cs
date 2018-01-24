@@ -24,5 +24,7 @@ namespace MC.Interfaces.Repository
         Task<bool> DeactivateUserByEmail(string email);
 
         Task<bool> ActivateUserByEmail(string email);
+
+        Task<bool> SetRoleByEmail(string email, int roleId);
     }
 }

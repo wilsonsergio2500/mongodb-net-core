@@ -189,6 +189,16 @@ namespace MongoCoreNet.Controllers
             };
         }
 
+        [HttpPost("update/user/role")]
+        [Authorize(Policy = Policies.AUTHORIZATION_ADMIN_ONLY)]
+        public async Task<ActionResponse> UpdateUserRole([FromBody]RoleChangeBasedRequest request) {
+            bool completed = await userRepository.SetRoleByEmail(request.email, request.role);
+
+            return new ActionResponse
+            {
+                State = completed
+            };
+        }
 
         #endregion
 
