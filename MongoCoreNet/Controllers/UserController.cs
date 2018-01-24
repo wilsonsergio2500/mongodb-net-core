@@ -200,6 +200,28 @@ namespace MongoCoreNet.Controllers
             };
         }
 
+        [HttpPost("update/user/password")]
+        public async Task<ActionResponse> UpdateUserPassword([FromBody]PasswordChangeBasedRequest request)
+        {
+            bool completed = false;
+
+
+            Mdls.User user = await userRepository.GetUserByEmail(request.email);
+            if (user != null)
+            {
+                string encryptedPassword = encryptionProvider.Encrypt(request.password);
+                string encryptionKey = encryptionProvider.EncryiptionKey;
+
+                bool updated = await userRepository.UpdatePassword(user.id, encryptedPassword, encryptionKey);
+                completed = updated;
+            }
+
+            return new ActionResponse
+            {
+                State = completed
+            };
+        }
+
         #endregion
 
     }

@@ -9,6 +9,8 @@ namespace MC.Interfaces.Repository
 {
     public interface IUserRepository : IBaseRepository<User>
     {
+        Task<User> GetUserByEmail(string email);
+
         Task<bool> DoesEmailExist(string email);
 
         Task<bool> DoesUserNameExist(string username);

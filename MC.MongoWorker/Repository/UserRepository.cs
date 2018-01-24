@@ -20,6 +20,19 @@ namespace MC.MongoWorker.Repository
         {
         }
 
+        public async Task<User> GetUserByEmail(string email) {
+            User user;
+            try
+            {
+                FilterDefinition<User> queryEmail = Builders<User>.Filter.Eq(x => x.Email, email.ToLower());
+                user = await Items.Find(queryEmail).SingleAsync();
+                return user;
+            }
+            catch {
+                return null;
+            }
+        }
+
         public override async Task<string> Add(User entity)
         {
             try
