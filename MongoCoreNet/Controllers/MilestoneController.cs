@@ -137,12 +137,13 @@ namespace MongoCoreNet.Controllers
         public async Task<ActionResponse> Add([FromBody]Mdls.Milestone milestone) {
 
             milestone.UserId = currentAuthenticationContext.CurrentUser;
-            if (milestone.Image != null && milestone.Image.StartsWith("data:image/png;base64,")) {
-                string path = await amazonS3ImageProvider.Add($"milestones/{milestone.UserId}/{milestone.id}/img.png", milestone.Image);
-                milestone.Image = path;
-            }
 
             string milestoneId = await milestoneRepository.Add(milestone);
+            if (milestone.Image != null && milestone.Image.StartsWith("data:image/png;base64,"))
+            {
+                string path = await amazonS3ImageProvider.Add($"milestones/{milestone.UserId}/{milestoneId}/img.png", milestone.Image);
+                bool saved = await milestoneRepository.SetImage(milestoneId, path);
+            }
 
             return new ActionResponse()
             {
